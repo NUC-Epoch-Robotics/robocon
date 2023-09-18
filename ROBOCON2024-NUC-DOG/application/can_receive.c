@@ -53,8 +53,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			static uint8_t i = 0;
 			//get motor id
 			i = rx_header.StdId - CAN_2006_M1_ID;
-			get_motor_measure(&motor_chassis_dir[i], rx_data);
-			get_total_angle(&motor_chassis_dir[i]);
+			get_motor_measure(&moto_chassis[i], rx_data);
+			get_total_angle(&moto_chassis[i]);
 
 			detect_hook( motor_dir1_TOE + i);
 			break;

@@ -19,7 +19,7 @@
 #include "cmsis_os.h"
 #include "main.h"
 
-
+motor_measure_t moto_chassis[8] = {0};
 extern CAN_HandleTypeDef hcan1;
 
 
@@ -59,18 +59,43 @@ void CAN_cmd_chassis_reset_ID(void)
 
 
 
+// /**
+//   * @brief          发送电机控制电流(0x201,0x202,0x203,0x204)
+//   * @param[in]      motor1: (0x201) 2006电机控制电流, 范围 [-10000,10000]
+//   * @param[in]      motor2: (0x202) 2006电机控制电流, 范围 [-10000,10000]
+//   * @param[in]      motor3: (0x203) 2006电机控制电流, 范围 [-10000,10000]
+//   * @param[in]      motor4: (0x204) 2006电机控制电流, 范围 [-10000,10000]
+//   * @retval         none
+//   */
+// void set_motor_current(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
+// {
+// 	uint32_t send_mail_box;
+// 	chassis_tx_message.StdId = CAN_CHASSIS_ALL_ID;
+// 	chassis_tx_message.IDE = CAN_ID_STD;
+// 	chassis_tx_message.RTR = CAN_RTR_DATA;
+// 	chassis_tx_message.DLC = 0x08;
+// 	chassis_can_send_data[0] = motor1 >> 8;
+// 	chassis_can_send_data[1] = motor1;
+// 	chassis_can_send_data[2] = motor2 >> 8;
+// 	chassis_can_send_data[3] = motor2;
+// 	chassis_can_send_data[4] = motor3 >> 8;
+// 	chassis_can_send_data[5] = motor3;
+// 	chassis_can_send_data[6] = motor4 >> 8;
+// 	chassis_can_send_data[7] = motor4;
+
+// 	HAL_CAN_AddTxMessage(&CHASSIS_DIR_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
+
+// }
+
+
 /**
-  * @brief          发送电机控制电流(0x201,0x202,0x203,0x204)
-  * @param[in]      motor1: (0x201) 2006电机控制电流, 范围 [-10000,10000]
-  * @param[in]      motor2: (0x202) 2006电机控制电流, 范围 [-10000,10000]
-  * @param[in]      motor3: (0x203) 2006电机控制电流, 范围 [-10000,10000]
-  * @param[in]      motor4: (0x204) 2006电机控制电流, 范围 [-10000,10000]
+  * @brief          发送底盘电机控制电流(0x201,0x202,0x203,0x204)
   * @retval         none
   */
-void set_motor_current(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
+void send_chassis_cur1_4(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
 {
 	uint32_t send_mail_box;
-	chassis_tx_message.StdId = CAN_CHASSIS_ALL_ID;
+	chassis_tx_message.StdId = 0x200;
 	chassis_tx_message.IDE = CAN_ID_STD;
 	chassis_tx_message.RTR = CAN_RTR_DATA;
 	chassis_tx_message.DLC = 0x08;
@@ -84,9 +109,30 @@ void set_motor_current(int16_t motor1, int16_t motor2, int16_t motor3, int16_t m
 	chassis_can_send_data[7] = motor4;
 
 	HAL_CAN_AddTxMessage(&CHASSIS_DIR_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
-
 }
 
+/**
+  * @brief          发送底盘电机控制电流(0x205,0x206,0x207,0x208)
+  * @retval         none
+  */
+void send_chassis_cur5_8(int16_t motor5, int16_t motor6, int16_t motor7, int16_t motor8)
+{
+	uint32_t send_mail_box;
+	chassis_tx_message.StdId = 0x1ff;
+	chassis_tx_message.IDE = CAN_ID_STD;
+	chassis_tx_message.RTR = CAN_RTR_DATA;
+	chassis_tx_message.DLC = 0x08;
+	chassis_can_send_data[0] = motor5 >> 8;
+	chassis_can_send_data[1] = motor5;
+	chassis_can_send_data[2] = motor6 >> 8;
+	chassis_can_send_data[3] = motor6;
+	chassis_can_send_data[4] = motor7 >> 8;
+	chassis_can_send_data[5] = motor7;
+	chassis_can_send_data[6] = motor8 >> 8;
+	chassis_can_send_data[7] = motor8;
+
+	HAL_CAN_AddTxMessage(&CHASSIS_DIR_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
+}
 
 
 
@@ -120,7 +166,7 @@ void get_motor_measure(motor_measure_t *ptr, uint8_t *Data)
 	//		ptr->round_cnt --;
 	//	else if (ptr->angle - ptr->last_angle < -4096)
 	//		ptr->round_cnt ++;
-	if(cnt <= 5) //初始化零角度，可以实现每次上电自动将初始位置归为0角
+	if(cnt <= 50) //初始化零角度，可以实现每次上电自动将初始位置归为0角
 	{
 		ptr->offset_angle = ptr->angle;
 		ptr->total_angle = ptr->round_cnt * 8192 + ptr->angle - ptr->offset_angle;

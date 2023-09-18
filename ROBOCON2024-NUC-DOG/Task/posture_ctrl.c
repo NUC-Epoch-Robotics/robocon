@@ -361,10 +361,10 @@ void PostureControl_task(void *pvParameters)
 //                state= STOP;
 
             break;
-        case JUMP:		//跳跃
-            //pid_spd_out_limit=6720;
-            ExecuteJump();
-            break;
+//        case JUMP:		//跳跃
+//            //pid_spd_out_limit=6720;
+//            ExecuteJump();
+//            break;
 
         case START:		//初始化
             StartPosToMiddlePos();
@@ -687,87 +687,87 @@ void CommandAllLegs_v(void)
     SetCoupledPosition(3);
 }
 
-/**
- *
- * 检测步态增益是否正确
- * @param  gains LegGain to check
- * @return       True if valid gains, false if invalid
- */
-bool IsValidLegGain( LegGain gains) {
-    // check for unstable gains
-    bool bad =  gains.kp_spd < 0 || gains.kd_spd < 0 ||
-                gains.kp_pos < 0 || gains.kd_pos < 0;
-    if (bad) {
-        printf("Invalid gains: <0");
-        vTaskDelay(500);
-        return false;
-    }
-    // check for instability / sensor noise amplification
-    bad = bad || gains.kp_spd > 50 || gains.kd_spd > 50 ||
-          gains.kp_pos > 50 || gains.kd_pos > 50;
-    if (bad) {
-        printf("Invalid gains: too high.");
-        vTaskDelay(500);
-        return false;
-    }
-    // check for underdamping -> instability
-    bad = bad || (gains.kp_spd > 50 && gains.kd_spd < 0.1);
-    bad = bad || (gains.kp_pos > 50 && gains.kd_pos < 0.1);
-    if (bad) {
-        printf("Invalid gains: underdamped");
-        vTaskDelay(500);
-        return false;
-    }
-    return true;
-}
-/**
- *
- * 检测步态参数是否正确
- * @param  gains LegGain to check
- * @return       True if valid gains, false if invalid
- */
-bool IsValidGaitParams( GaitParams params) {
-    const float maxL = 30.1;
-    const float minL = 9.9;
+///**
+// *
+// * 检测步态增益是否正确
+// * @param  gains LegGain to check
+// * @return       True if valid gains, false if invalid
+// */
+//bool IsValidLegGain( LegGain gains) {
+//    // check for unstable gains
+//    bool bad =  gains.kp_spd < 0 || gains.kd_spd < 0 ||
+//                gains.kp_pos < 0 || gains.kd_pos < 0;
+//    if (bad) {
+//        printf("Invalid gains: <0");
+//        vTaskDelay(500);
+//        return false;
+//    }
+//    // check for instability / sensor noise amplification
+//    bad = bad || gains.kp_spd > 50 || gains.kd_spd > 50 ||
+//          gains.kp_pos > 50 || gains.kd_pos > 50;
+//    if (bad) {
+//        printf("Invalid gains: too high.");
+//        vTaskDelay(500);
+//        return false;
+//    }
+//    // check for underdamping -> instability
+//    bad = bad || (gains.kp_spd > 50 && gains.kd_spd < 0.1);
+//    bad = bad || (gains.kp_pos > 50 && gains.kd_pos < 0.1);
+//    if (bad) {
+//        printf("Invalid gains: underdamped");
+//        vTaskDelay(500);
+//        return false;
+//    }
+//    return true;
+//}
+///**
+// *
+// * 检测步态参数是否正确
+// * @param  gains LegGain to check
+// * @return       True if valid gains, false if invalid
+// */
+//bool IsValidGaitParams( GaitParams params) {
+//    const float maxL = 30.1;
+//    const float minL = 9.9;
 
-    float stanceHeight = params.stance_height;
-    float downAMP = params.down_amp;
-    float upAMP = params.up_amp;
-    float flightPercent = params.flight_percent;
-    float stepLength = params.step_length;
-    float FREQ = params.freq;
+//    float stanceHeight = params.stance_height;
+//    float downAMP = params.down_amp;
+//    float upAMP = params.up_amp;
+//    float flightPercent = params.flight_percent;
+//    float stepLength = params.step_length;
+//    float FREQ = params.freq;
 
-    if (stanceHeight + downAMP > maxL || sqrt(pow(stanceHeight, 2) + pow(stepLength / 2.0, 2)) > maxL) {
-        printf("Gait overextends leg");
-        vTaskDelay(500);
-        return false;
-    }
-    if (stanceHeight - upAMP < minL) {
-        printf("Gait underextends leg");
-        vTaskDelay(500);
-        return false;
-    }
+//    if (stanceHeight + downAMP > maxL || sqrt(pow(stanceHeight, 2) + pow(stepLength / 2.0, 2)) > maxL) {
+//        printf("Gait overextends leg");
+//        vTaskDelay(500);
+//        return false;
+//    }
+//    if (stanceHeight - upAMP < minL) {
+//        printf("Gait underextends leg");
+//        vTaskDelay(500);
+//        return false;
+//    }
 
-    if (flightPercent <= 0 || flightPercent > 1.0) {
-        printf("Flight percent is invalid");
-        vTaskDelay(500);
-        return false;
-    }
+//    if (flightPercent <= 0 || flightPercent > 1.0) {
+//        printf("Flight percent is invalid");
+//        vTaskDelay(500);
+//        return false;
+//    }
 
-    if (FREQ < 0) {
-        printf("Frequency cannot be negative");
-        vTaskDelay(500);
-        return false;
-    }
+//    if (FREQ < 0) {
+//        printf("Frequency cannot be negative");
+//        vTaskDelay(500);
+//        return false;
+//    }
 
-    if (FREQ > 10.0) {
-        printf("Frequency is too high (>10)");
-        vTaskDelay(500);
-        return false;
-    }
+//    if (FREQ > 10.0) {
+//        printf("Frequency is too high (>10)");
+//        vTaskDelay(500);
+//        return false;
+//    }
 
-    return true;
-}
+//    return true;
+//}
 /**
  *改变腿部增益
  *调用了PID_reset_kpKd 函数

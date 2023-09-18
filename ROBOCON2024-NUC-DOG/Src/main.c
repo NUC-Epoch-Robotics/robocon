@@ -105,7 +105,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	dbus_uart_init();
 	CAN_Filter_Init();
-  __HAL_UART_ENABLE_IT(&huart6, UART_IT_IDLE);    
+//  __HAL_UART_ENABLE_IT(&huart6, UART_IT_IDLE);    
 //  HAL_UART_Receive_DMA(&huart6,&rec,1);
   /* USER CODE END 2 */
 

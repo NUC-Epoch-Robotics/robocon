@@ -91,6 +91,7 @@ extern void set_motor_current(int16_t motor1, int16_t motor2, int16_t motor3, in
 
 extern const motor_measure_t *get_chassis_dir_motor_measure_point(uint8_t i);
 
+extern motor_measure_t  moto_chassis[];
 void get_motor_measure(motor_measure_t *ptr, uint8_t *Data);
 
 void get_total_angle(motor_measure_t *p);
